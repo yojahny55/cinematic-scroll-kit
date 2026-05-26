@@ -1,0 +1,23 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor swap files
+*.swp
+*.swo
+.*.kate-swp
+.idea/
+.vscode/
+
+# Local dev
+node_modules/
+.env
+.env.local
+
+# Build artefacts (the kit itself ships no build output)
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*

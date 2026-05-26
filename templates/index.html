@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>{Brand} — {tagline}</title>
+<meta name="description" content="{1-sentence description for search and social previews.}">
+
+<!-- Open Graph / social -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="{Brand} — {tagline}">
+<meta property="og:description" content="{1-sentence description.}">
+<meta property="og:image" content="og-cover.jpg">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Replace with your chosen Google Fonts (see skill 06 for editorial pairings) -->
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=JetBrains+Mono:wght@300;400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<!-- Decorative overlays (do not remove — part of the cinematic treatment) -->
+<div class="grain" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+<div class="curtain" aria-hidden="true"></div>
+
+<!-- ============================================================
+     PERSISTENT VIDEO STAGE
+     All N clips live here, stacked. JS crossfades the active one.
+     ============================================================ -->
+<div class="stage" aria-hidden="true">
+  <video class="stage__v" data-idx="0" data-src="videos/01.mp4" data-src-mobile="videos/mobile/01.mp4" muted playsinline preload="auto" tabindex="-1"></video>
+  <video class="stage__v" data-idx="1" data-src="videos/02.mp4" data-src-mobile="videos/mobile/02.mp4" muted playsinline preload="auto" tabindex="-1"></video>
+  <video class="stage__v" data-idx="2" data-src="videos/03.mp4" data-src-mobile="videos/mobile/03.mp4" muted playsinline preload="auto" tabindex="-1"></video>
+  <video class="stage__v" data-idx="3" data-src="videos/04.mp4" data-src-mobile="videos/mobile/04.mp4" muted playsinline preload="auto" tabindex="-1"></video>
+  <video class="stage__v" data-idx="4" data-src="videos/05.mp4" data-src-mobile="videos/mobile/05.mp4" muted playsinline preload="auto" tabindex="-1"></video>
+  <video class="stage__v" data-idx="5" data-src="videos/06.mp4" data-src-mobile="videos/mobile/06.mp4" muted playsinline preload="auto" tabindex="-1"></video>
+  <video class="stage__v" data-idx="6" data-src="videos/07.mp4" data-src-mobile="videos/mobile/07.mp4" muted playsinline preload="auto" tabindex="-1"></video>
+  <video class="stage__v" data-idx="7" data-src="videos/08.mp4" data-src-mobile="videos/mobile/08.mp4" muted playsinline preload="auto" tabindex="-1"></video>
+  <video class="stage__v" data-idx="8" data-src="videos/09.mp4" data-src-mobile="videos/mobile/09.mp4" muted playsinline preload="auto" tabindex="-1"></video>
+  <div class="stage__veil"></div>
+  <div class="stage__veil stage__veil--right"></div>
+  <div class="stage__veil stage__veil--center"></div>
+</div>
+
+<!-- Nav -->
+<header class="nav">
+  <a class="nav__mark" href="#s1" aria-label="{Brand}">
+    <!-- Replace with your logo SVG -->
+    <svg viewBox="0 0 32 32" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.1">
+      <circle cx="16" cy="16" r="6"/>
+    </svg>
+    <span>{Brand}<em>{secondary word}</em></span>
+  </a>
+  <nav class="nav__links" aria-label="Primary">
+    <a href="#s5">{Link 1}</a>
+    <a href="#s7">{Link 2}</a>
+    <a href="#pricing">{Link 3}</a>
+    <a href="#contact" class="nav__cta">{CTA short}</a>
+  </nav>
+  <div class="nav__progress"><span id="progress"></span></div>
+</header>
+
+<!-- ============================================================
+     SCROLL STORY — 9 scenes
+     Each <section.scene>:
+       - id="sN"
+       - data-scene="N"
+       - data-scrub="X.X"  (height as multiples of viewport; ~0.55 × clip duration)
+       - data-veil="left|right|center"  (ALTERNATE — never two adjacent identical)
+       - class additions: scene--right or scene--center to match copy
+     ============================================================ -->
+<main id="story">
+
+  <!-- Scene 1 — Hero -->
+  <section class="scene" id="s1" data-scene="1" data-scrub="4.0" data-veil="left">
+    <div class="scene__pin">
+      <div class="scene__copy scene__copy--hero">
+        <div class="hud">
+          <span class="hud__num">01</span>
+          <span class="hud__line"></span>
+          <span class="hud__tag">{Scene 1 theme — 2-3 words uppercase}</span>
+        </div>
+        <h1 class="display">
+          <span>{Hero line 1}</span>
+          <span class="display__em">{hero line 2 — italic accent}</span>
+          <span>{hero line 3}.</span>
+        </h1>
+        <p class="lede">{Subhead — one sentence, italic, ~16 words max.}</p>
+        <p class="scroll-hint"><span>Scroll to enter</span><svg width="10" height="40" viewBox="0 0 10 40"><line x1="5" y1="0" x2="5" y2="40" stroke="currentColor"/></svg></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Scene 2 — Right-aligned copy -->
+  <section class="scene scene--right" id="s2" data-scene="2" data-scrub="3.5" data-veil="right">
+    <div class="scene__pin">
+      <div class="scene__copy">
+        <div class="hud"><span class="hud__num">02</span><span class="hud__line"></span><span class="hud__tag">{Theme}</span></div>
+        <h2 class="title">{Two-line section title.<br>Italic accent if useful.}</h2>
+        <p class="body">{Body paragraph — 2-3 sentences max. Concrete imagery beats abstract claims.}</p>
+        <ul class="marker">
+          <li>{Specific outcome 1}</li>
+          <li>{Specific outcome 2}</li>
+          <li>{Specific outcome 3}</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Scene 3 — Centered (brand reveal / resolution) -->
+  <section class="scene scene--center" id="s3" data-scene="3" data-scrub="4.8" data-veil="center">
+    <div class="scene__pin">
+      <div class="scene__copy scene__copy--center">
+        <div class="hud hud--center"><span class="hud__num">03</span><span class="hud__line"></span><span class="hud__tag">{Theme}</span></div>
+        <h2 class="display display--quiet">
+          {Resolution sentence —<br>two or three lines<br>
+          <em>with an italic emphasis.</em>}
+        </h2>
+      </div>
+    </div>
+  </section>
+
+  <!-- Scene 4 — Right -->
+  <section class="scene scene--right" id="s4" data-scene="4" data-scrub="4.0" data-veil="right">
+    <div class="scene__pin">
+      <div class="scene__copy">
+        <div class="hud"><span class="hud__num">04</span><span class="hud__line"></span><span class="hud__tag">{Theme}</span></div>
+        <h2 class="title">{Symbol / brand mark<br>elaboration.}</h2>
+        <p class="body">{Why does the symbol mean what it means? One paragraph.}</p>
+        <div class="diptych">
+          <div><span class="diptych__k">{Word 1}</span><span class="diptych__v">{meaning 1}</span></div>
+          <div><span class="diptych__k">{Word 2}</span><span class="diptych__v">{meaning 2}</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Scene 5 — Left, three-up grid (Practice / Services) -->
+  <section class="scene" id="s5" data-scene="5" data-scrub="5.5" data-veil="left">
+    <div class="scene__pin">
+      <div class="scene__copy">
+        <div class="hud"><span class="hud__num">05</span><span class="hud__line"></span><span class="hud__tag">{Theme}</span></div>
+        <h2 class="title">{Three levels of<br>intervention.}</h2>
+        <p class="body body--narrow">{One sentence intro.}</p>
+        <ol class="levels">
+          <li><span class="levels__n">I.</span><div><h3>{Service 1}</h3><p>{One-sentence description.}</p></div></li>
+          <li class="levels__mid"><span class="levels__n">II.</span><div><h3>{Service 2}</h3><p>{One-sentence description.}</p></div></li>
+          <li class="levels__dark"><span class="levels__n">III.</span><div><h3>{Service 3}</h3><p>{One-sentence description.}</p></div></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- Scene 6 — Right (Audience) -->
+  <section class="scene scene--right" id="s6" data-scene="6" data-scrub="4.8" data-veil="right">
+    <div class="scene__pin">
+      <div class="scene__copy">
+        <div class="hud"><span class="hud__num">06</span><span class="hud__line"></span><span class="hud__tag">{Theme}</span></div>
+        <h2 class="title">{Solutions for<br>every stage.}</h2>
+        <dl class="defs">
+          <div><dt>{Audience 1}</dt><dd>{One-sentence value prop.}</dd></div>
+          <div><dt>{Audience 2}</dt><dd>{One-sentence value prop.}</dd></div>
+          <div><dt>{Audience 3}</dt><dd>{One-sentence value prop.}</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- Scene 7 — Method (4-up grid) -->
+  <section class="scene" id="s7" data-scene="7" data-scrub="6.5" data-veil="left">
+    <div class="scene__pin">
+      <div class="scene__copy">
+        <div class="hud"><span class="hud__num">07</span><span class="hud__line"></span><span class="hud__tag">{Theme}</span></div>
+        <h2 class="title">{Method title.}</h2>
+        <div class="method">
+          <article><span>01</span><h3>{Step 1}</h3><p>{One-line description.}</p></article>
+          <article><span>02</span><h3>{Step 2}</h3><p>{One-line description.}</p></article>
+          <article><span>03</span><h3>{Step 3}</h3><p>{One-line description.}</p></article>
+          <article><span>04</span><h3>{Step 4}</h3><p>{One-line description.}</p></article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Scene 8 — Manifesto (centered, alternating L/R lines) -->
+  <section class="scene scene--center" id="s8" data-scene="8" data-scrub="4.2" data-veil="center">
+    <div class="scene__pin">
+      <div class="scene__copy scene__copy--center manifesto">
+        <div class="hud hud--center"><span class="hud__num">08</span><span class="hud__line"></span><span class="hud__tag">Manifesto</span></div>
+        <p data-align="l">{Statement 1.}</p>
+        <p data-align="r">{Statement 2.}</p>
+        <p data-align="l">{Statement 3.}</p>
+        <p data-align="r">{Statement 4.}</p>
+        <p data-align="l"><em>{Apex statement — italic.}</em></p>
+        <p data-align="r">{Closing statement.}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Scene 9 — Closing CTA -->
+  <section class="scene" id="s9" data-scene="9" data-scrub="4.8" data-veil="left">
+    <div class="scene__pin">
+      <div class="scene__copy scene__copy--center">
+        <div class="hud hud--center"><span class="hud__num">09</span><span class="hud__line"></span><span class="hud__tag">{Theme}</span></div>
+        <h2 class="display display--quiet">
+          {Closing line 1.}<br>
+          <em>{Closing line 2 — italic.}</em>
+        </h2>
+        <a href="#contact" class="cta">{Primary CTA} →</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================================================
+     PRICING — utility content (delete if not relevant)
+     ============================================================ -->
+<section class="page" id="pricing">
+  <div class="page__hdr">
+    <span class="eyebrow">{Eyebrow}</span>
+    <h2>{Pricing headline.}</h2>
+  </div>
+  <div class="plans">
+    <article class="plan">
+      <header><h3>{Plan 1 name}</h3><span class="plan__price">From&nbsp;<b>${X}</b></span></header>
+      <p>{Plan 1 tagline.}</p>
+      <ul>
+        <li>{Feature}</li><li>{Feature}</li><li>{Feature}</li>
+      </ul>
+      <a href="#contact" class="plan__cta">{CTA}</a>
+    </article>
+    <article class="plan plan--featured">
+      <header><h3>{Plan 2 name}</h3><span class="plan__price">From&nbsp;<b>${Y}</b></span></header>
+      <p>{Plan 2 tagline.}</p>
+      <ul><li>{Feature}</li><li>{Feature}</li><li>{Feature}</li></ul>
+      <a href="#contact" class="plan__cta">{CTA}</a>
+    </article>
+    <article class="plan">
+      <header><h3>{Plan 3 name}</h3><span class="plan__price">From&nbsp;<b>${Z}</b></span></header>
+      <p>{Plan 3 tagline.}</p>
+      <ul><li>{Feature}</li><li>{Feature}</li><li>{Feature}</li></ul>
+      <a href="#contact" class="plan__cta">{CTA}</a>
+    </article>
+  </div>
+</section>
+
+<!-- ============================================================
+     CONTACT
+     ============================================================ -->
+<section class="page page--contact" id="contact">
+  <div class="contact">
+    <div>
+      <span class="eyebrow">{Eyebrow}</span>
+      <h2>{Contact headline.}</h2>
+      <p>{Contact paragraph — one sentence.}</p>
+    </div>
+    <form class="form" action="{your-backend-endpoint}" method="POST">
+      <label><span>Name</span><input required type="text" name="name"></label>
+      <label><span>Email</span><input required type="email" name="email"></label>
+      <label><span>Company</span><input type="text" name="company"></label>
+      <label><span>Message</span><textarea required rows="4" name="message"></textarea></label>
+      <button type="submit">Send →</button>
+    </form>
+  </div>
+</section>
+
+<footer class="foot">
+  <div>
+    <span class="eyebrow">{Brand}</span>
+    <p>{Footer tagline.}</p>
+  </div>
+  <div class="foot__meta">
+    <span>© <span id="yr"></span> {Brand}</span>
+    <span>{Optional secondary line}</span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
