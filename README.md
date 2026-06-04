@@ -32,12 +32,37 @@ cinematic-scroll-kit/
 │   ├── stage-sources.sh     # rename AI-generated clips to 01..NN.mp4
 │   ├── encode-keyframe.sh   # all-keyframe MP4 (for desktop scroll-scrub)
 │   └── encode-mobile-portrait.sh   # 9:16 portrait reframe (for mobile loop)
+├── schemas/                 # machine-readable contracts for host generators
+│   └── scene.json           # canonical scene shape (consumed by claude-wp-builder)
 └── templates/               # drop-in HTML / CSS / JS skeletons
     ├── index.html
     ├── style.css
     ├── main.js
+    ├── scenes.json          # default 9-scene manifest for /wp-cinematic-seed
     └── README.md
 ```
+
+---
+
+## WordPress integration (claude-wp-builder)
+
+The kit ships with a `schemas/scene.json` contract that [`claude-wp-builder`](https://github.com/yojahny55/claude-wp-builder) reads to generate ACF/SCF fields, template parts, and seed scripts — so you can take a cinematic demo all the way to a WordPress theme without hand-wiring custom fields.
+
+```bash
+# 1. Install the kit as a skill
+npx skills add yojahny55/cinematic-scroll-kit -g -y
+
+# 2. Scaffold a cinematic WP theme
+/wp-cinematic-init --path=./my-site
+
+# 3. Replace placeholder videos with real ones
+/wp-cinematic-encode raw-scene-3.mp4 --scene=3 --poster
+
+# 4. Author scenes inline
+/wp-cinematic-scene 3 --eyebrow "Field log — 03" --headline "Architecture is leverage."
+```
+
+Hybrid demos (cinematic reel + trailing pricing/contact sections) are supported via `/wp-section <name> --hybrid`. See [`docs/cinematic-mode.md`](https://github.com/yojahny55/claude-wp-builder/blob/main/docs/cinematic-mode.md) in the plugin repo for the full walkthrough.
 
 ---
 

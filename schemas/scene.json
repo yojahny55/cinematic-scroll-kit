@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/yojahny55/cinematic-scroll-kit/schemas/scene.json",
+  "title": "CinematicScene",
+  "description": "Canonical shape of a single cinematic scene. Consumed by host generators (e.g. claude-wp-builder) to produce ACF/SCF field groups, template parts, and seed scripts. Additive changes only — removing a field is a breaking change for hosts.",
+  "version": "1.0.0",
+  "type": "object",
+  "required": ["scene_id"],
+  "properties": {
+    "scene_id": {
+      "type": "string",
+      "pattern": "^scene-[a-z0-9-]+$",
+      "description": "Stable identifier (scene-1, scene-intro, etc.). Used as anchor + ACF row key."
+    },
+    "video_desktop": {
+      "type": "string",
+      "format": "uri-reference",
+      "description": "16:9 MP4, all-keyframe encoded (-g 1 -bframes 0) for frame-perfect scrub.",
+      "x-acf": { "type": "file", "return_format": "array", "mime_types": "mp4" }
+    },
+    "video_mobile": {
+      "type": "string",
+      "format": "uri-reference",
+      "description": "9:16 portrait MP4, autoplay-loop on mobile (NOT scrub).",
+      "x-acf": { "type": "file", "return_format": "array", "mime_types": "mp4" }
+    },
+    "poster": {
+      "type": "string",
+      "format": "uri-reference",
+      "description": "Static image fallback for prefers-reduced-motion and slow connections.",
+      "x-acf": { "type": "image", "return_format": "array" }
+    },
+    "eyebrow": {
+      "type": "string",
+      "maxLength": 60,
+      "description": "Small HUD/kicker label above headline. Bilingual via _es suffix.",
+      "x-acf": { "type": "text", "bilingual": true }
+    },
+    "headline": {
+      "type": "string",
+      "maxLength": 240,
+      "description": "Main scene headline. Allows <br>, <em>, <strong>.",
+      "x-acf": { "type": "textarea", "bilingual": true, "allow_inline_html": true }
+    },
+    "body": {
+      "type": "string",
+      "description": "Scene body copy.",
+      "x-acf": { "type": "wysiwyg", "bilingual": true, "toolbar": "basic" }
+    },
+    "cta_label": {
+      "type": "string",
+      "maxLength": 40,
+      "x-acf": { "type": "text", "bilingual": true }
+    },
+    "cta_url": {
+      "type": "string",
+      "format": "uri-reference",
+      "x-acf": { "type": "url" }
+    },
+    "scrub_duration": {
+      "type": "integer",
+      "minimum": 50,
+      "maximum": 400,
+      "default": 100,
+      "description": "Scroll length for this scene in vh units. Desktop scrub only — ignored on mobile.",
+      "x-acf": { "type": "number", "append": "vh" }
+    },
+    "align": {
+      "type": "string",
+      "enum": ["left", "center", "right"],
+      "default": "left",
+      "x-acf": { "type": "select" }
+    },
+    "veil": {
+      "type": "string",
+      "enum": ["none", "soft", "heavy"],
+      "default": "soft",
+      "description": "Darkening veil over video for text legibility.",
+      "x-acf": { "type": "select" }
+    }
+  },
+  "x-template-part": "template-parts/cinematic/scene.php",
+  "x-mobile-strategy": "autoplay-loop",
+  "x-desktop-strategy": "scroll-scrub",
+  "x-engine": {
+    "desktop": ["gsap", "scrolltrigger", "lenis"],
+    "mobile": ["intersection-observer"],
+    "guards": ["prefers-reduced-motion", "data-saver", "pause-motion-toggle"]
+  }
+}
