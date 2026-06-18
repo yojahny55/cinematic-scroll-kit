@@ -38,7 +38,7 @@ If a user says *"build me a scroll-driven cinematic site for X"*:
 2. **Phase 2 — Storyboard.** Read `skills/02-storyboard-from-narrative.md`. Produce a numbered list of 6–10 scenes, each with: scene beat, start frame prompt, end frame prompt, motion description, duration. Save as `video-prompts.md`.
 3. **Phase 3 — Generate.** The user generates clips externally (Kling/Runway/Sora). Once they drop them into a folder, you proceed.
 4. **Phase 4 — Process videos.** Run `scripts/encode-keyframe.sh` on the desktop set (all-keyframe MP4 for scrub) and `scripts/encode-mobile-portrait.sh` for the mobile set (9:16 center-crop). See `skills/03-video-preprocessing.md`.
-5. **Phase 5 — Build.** Use `templates/index.html`, `templates/style.css`, `templates/main.js` as the skeleton. Customize copy + scene heights. See `skills/04-build-cinematic-scroll-site.md` and `skills/05-adaptive-mobile-strategy.md`.
+5. **Phase 5 — Build.** Use `templates/index.html`, `templates/style.css`, `templates/main.js`, `templates/cinematic-scrubber.js` as the skeleton. Customize copy + scene heights. **Before wiring the scrub, read `skills/07-scroll-scrub-rendering.md`** — it picks the render engine (WebCodecs canvas by default, `video.currentTime` fallback). Then see `skills/04-build-cinematic-scroll-site.md` and `skills/05-adaptive-mobile-strategy.md`.
 
 ---
 
@@ -49,7 +49,8 @@ These are non-obvious choices we learned the hard way:
 | Decision | Why |
 |---|---|
 | **One persistent `.stage` for all videos** (not per-scene) | Hard cuts between sticky pins always read as "page break." A shared fixed stage with crossfades reads as one continuous reel. |
-| **All-keyframe MP4 encoding (`-g 1 -bframes 0`)** | Standard MP4s only have a keyframe every ~48 frames. `currentTime = X` stutters between them. All-keyframe = frame-perfect seek. ~30% file size bump. |
+| **WebCodecs → canvas for the scrub** (not `video.currentTime`) | `currentTime` is not frame-accurate and can't decode backward — the cause of stuck/jump/reverse-stutter. `VideoDecoder` paints the exact requested frame. Baseline since Oct 2024; `currentTime` kept only as old-browser fallback. **This is the single most important decision** — see `skills/07-scroll-scrub-rendering.md`. |
+| **All-keyframe MP4 encoding (`-g 1 -bframes 0`)** | Every frame independently decodable. For WebCodecs: one decode per requested frame, no keyframe walk-back. For the `currentTime` fallback: seeks land closer to target. ~30% file size bump. |
 | **9:16 portrait videos for mobile** (center-crop from 16:9) | Landscape video on phones leaves 60% of screen black; portrait fills the canvas and feels native. |
 | **Scrub on desktop, autoplay-loop on mobile** | Scroll-scrubbing on touch devices is awful (jittery, drains battery, conflicts with momentum scrolling). Mobile users expect read-and-scroll. |
 | **Lenis on desktop only** | Smooth-scroll libraries hijack mobile gestures. Native momentum scroll is better on iOS/Android. |
@@ -68,7 +69,8 @@ project-root/
 ├── index.html                  # single page, all scenes
 ├── assets/
 │   ├── css/style.css           # ~500 lines, design system + scene primitives
-│   └── js/main.js              # adaptive controller (desktop scrub / mobile loop)
+│   ├── js/main.js              # adaptive controller (desktop scrub / mobile loop)
+│   └── js/cinematic-scrubber.js # WebCodecs render module (frame-perfect scrub)
 ├── videos/                     # all-keyframe landscape MP4s
 │   ├── 01.mp4 ... 09.mp4
 │   ├── _orig/                  # untouched source files

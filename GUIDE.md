@@ -331,7 +331,7 @@ The script sorts the files alphabetically and renames them `01.mp4`, `02.mp4`, e
 bash cinematic-scroll-kit/scripts/encode-keyframe.sh videos/_orig videos
 ```
 
-This adds `-g 1 -bframes 0 -ref 1` — every frame is a keyframe. Result: `video.currentTime = X` instantly snaps to the exact frame, so scroll-scrub is buttery.
+This adds `-g 1 -bframes 0 -ref 1` — every frame is a keyframe. The default WebCodecs render path then decodes one self-contained frame per scroll position (no keyframe walk-back, smooth in reverse); on the `video.currentTime` fallback, seeks land on the exact frame. Either way, all-keyframe is required for a clean scrub. See `skills/07-scroll-scrub-rendering.md` for why `currentTime` alone isn't enough.
 
 Expect ~30% file-size growth. A 6-second clip goes from ~3MB to ~5MB.
 

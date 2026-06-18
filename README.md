@@ -18,13 +18,14 @@ cinematic-scroll-kit/
 ├── AGENTS.md                # master methodology — read this first
 ├── GUIDE.md                 # full operational walkthrough (start here if you're new)
 ├── README.md                # this file
-├── skills/                  # 6 skill files (Claude Code frontmatter format)
+├── skills/                  # 7 skill files (Claude Code frontmatter format)
 │   ├── 01-narrative-from-brand.md
 │   ├── 02-storyboard-from-narrative.md
 │   ├── 03-video-preprocessing.md
 │   ├── 04-build-cinematic-scroll-site.md
 │   ├── 05-adaptive-mobile-strategy.md
-│   └── 06-anti-ai-editorial-design.md
+│   ├── 06-anti-ai-editorial-design.md
+│   └── 07-scroll-scrub-rendering.md   # WebCodecs vs currentTime vs image-seq
 ├── commands/                # portable slash-commands (any agent)
 │   ├── cinematic-site.md    # full pipeline orchestrator
 │   └── storyboard.md        # storyboard-only quick command
@@ -36,6 +37,7 @@ cinematic-scroll-kit/
     ├── index.html
     ├── style.css
     ├── main.js
+    ├── cinematic-scrubber.js # WebCodecs frame-perfect scrub module
     └── README.md
 ```
 
@@ -48,7 +50,7 @@ A single-page site where:
 - A narrative (the brand's "story") is split into **N scenes** (typically 6–10).
 - Each scene has a **paired AI video clip** (start frame → end frame → image-to-video).
 - The user scrolls through **one continuous cinematic reel** — videos crossfade between scenes, copy fades in over the active frame.
-- On **desktop**: scroll position drives `video.currentTime` (frame-perfect scrub).
+- On **desktop**: scroll position drives a frame-perfect scrub. The kit decodes frames with **WebCodecs** and paints them to a `<canvas>` (smooth forward *and* reverse), falling back to `video.currentTime` only on older browsers. See `skills/07-scroll-scrub-rendering.md`.
 - On **mobile**: scenes autoplay-loop with portrait reframed videos (no scroll hijacking).
 
 End-to-end pipeline: narrative → storyboard → frame generation → video generation → preprocessing → build → mobile pass → polish → ship.
