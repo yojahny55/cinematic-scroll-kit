@@ -30,17 +30,31 @@
 <!-- ============================================================
      PERSISTENT VIDEO STAGE
      All N clips live here, stacked. JS crossfades the active one.
+     Each <video> has a sibling <canvas> with the same data-src. When
+     WebCodecs is supported (the default render path) the canvases are
+     shown and driven by CinematicScrubber; the <video>s are hidden.
+     On unsupported browsers the <canvas>es stay hidden and the <video>s
+     drive via currentTime. See skills/07-scroll-scrub-rendering.md.
      ============================================================ -->
 <div class="stage" aria-hidden="true">
   <video class="stage__v" data-idx="0" data-src="videos/01.mp4" data-src-mobile="videos/mobile/01.mp4" muted playsinline preload="auto" tabindex="-1"></video>
+  <canvas class="stage__c" data-idx="0" data-src="videos/01.mp4"></canvas>
   <video class="stage__v" data-idx="1" data-src="videos/02.mp4" data-src-mobile="videos/mobile/02.mp4" muted playsinline preload="auto" tabindex="-1"></video>
+  <canvas class="stage__c" data-idx="1" data-src="videos/02.mp4"></canvas>
   <video class="stage__v" data-idx="2" data-src="videos/03.mp4" data-src-mobile="videos/mobile/03.mp4" muted playsinline preload="auto" tabindex="-1"></video>
+  <canvas class="stage__c" data-idx="2" data-src="videos/03.mp4"></canvas>
   <video class="stage__v" data-idx="3" data-src="videos/04.mp4" data-src-mobile="videos/mobile/04.mp4" muted playsinline preload="auto" tabindex="-1"></video>
+  <canvas class="stage__c" data-idx="3" data-src="videos/04.mp4"></canvas>
   <video class="stage__v" data-idx="4" data-src="videos/05.mp4" data-src-mobile="videos/mobile/05.mp4" muted playsinline preload="auto" tabindex="-1"></video>
+  <canvas class="stage__c" data-idx="4" data-src="videos/05.mp4"></canvas>
   <video class="stage__v" data-idx="5" data-src="videos/06.mp4" data-src-mobile="videos/mobile/06.mp4" muted playsinline preload="auto" tabindex="-1"></video>
+  <canvas class="stage__c" data-idx="5" data-src="videos/06.mp4"></canvas>
   <video class="stage__v" data-idx="6" data-src="videos/07.mp4" data-src-mobile="videos/mobile/07.mp4" muted playsinline preload="auto" tabindex="-1"></video>
+  <canvas class="stage__c" data-idx="6" data-src="videos/07.mp4"></canvas>
   <video class="stage__v" data-idx="7" data-src="videos/08.mp4" data-src-mobile="videos/mobile/08.mp4" muted playsinline preload="auto" tabindex="-1"></video>
+  <canvas class="stage__c" data-idx="7" data-src="videos/08.mp4"></canvas>
   <video class="stage__v" data-idx="8" data-src="videos/09.mp4" data-src-mobile="videos/mobile/09.mp4" muted playsinline preload="auto" tabindex="-1"></video>
+  <canvas class="stage__c" data-idx="8" data-src="videos/09.mp4"></canvas>
   <div class="stage__veil"></div>
   <div class="stage__veil stage__veil--right"></div>
   <div class="stage__veil stage__veil--center"></div>
@@ -283,6 +297,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<!-- WebCodecs scrubber — loads before main.js, which feature-detects it.
+     MP4Box.js is lazy-loaded by the module itself on first use. -->
+<script src="assets/js/cinematic-scrubber.js"></script>
 <script src="assets/js/main.js"></script>
 </body>
 </html>

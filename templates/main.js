@@ -12,10 +12,20 @@
 
   const stage   = document.querySelector('.stage');
   const videos  = Array.from(document.querySelectorAll('.stage__v'));
+  const canvases = Array.from(document.querySelectorAll('.stage__c'));
   const scenes  = Array.from(document.querySelectorAll('.scene'));
   const curtain = document.querySelector('.curtain');
   const isMobile = mqMobile.matches;
-  console.info('[Kit] mode:', isMobile ? 'MOBILE (portrait videos, autoplay-loop)' : 'DESKTOP (landscape videos, scroll-scrub)');
+  // Rendering engine (see skills/07-scroll-scrub-rendering.md):
+  //   WebCodecs → canvas  when supported (frame-perfect, smooth reverse)
+  //   video.currentTime   fallback for old browsers (Safari <16.4, FF <132)
+  // Mobile always uses native autoplay-loop, never scrub.
+  const useWebCodecs = !isMobile
+    && window.CinematicScrubber
+    && window.CinematicScrubber.isSupported();
+  if (useWebCodecs) document.body.classList.add('webcodecs-scrub');
+  console.info('[Kit] mode:', isMobile ? 'MOBILE (portrait videos, autoplay-loop)' : 'DESKTOP (scroll-scrub)',
+    '| scrub:', useWebCodecs ? 'WebCodecs (canvas)' : 'video.currentTime (legacy)');
 
   // Re-init when crossing the breakpoint (e.g. resizing browser or rotating tablet)
   mqMobile.addEventListener('change', () => location.reload());
@@ -177,31 +187,74 @@
     { sx:1.20, x: 0,  y:-3 },
   ];
 
-  (async () => {
-    await Promise.all(videos.slice(0, 3).map(readyVideo));
-    videos[0].classList.add('active');
-    stage.setAttribute('data-veil', scenes[0].dataset.veil || 'left');
-  })();
-  videos.slice(3).forEach((v, i) => {
-    const idx = i + 3;
-    const trigger = scenes[Math.max(0, idx - 1)] || scenes[idx];
-    ScrollTrigger.create({ trigger, start: 'top bottom', once: true, onEnter: () => readyVideo(v) });
-  });
+  // ─── Rendering engine setup ───
+  // WebCodecs: one CinematicScrubber per canvas, decoding frames on demand.
+  // Legacy: prime <video> srcs as before. See skills/07-scroll-scrub-rendering.md.
+  const scrubbers = new Array(videos.length).fill(null);
+
+  if (useWebCodecs) {
+    const initScrubber = (idx) => {
+      const canvas = canvases[idx];
+      if (!canvas) return Promise.resolve();
+      const url = canvas.dataset.src;
+      if (!url) return Promise.resolve();
+      const s = new window.CinematicScrubber(url, canvas);
+      scrubbers[idx] = s;
+      return s.init().catch(e => {
+        console.warn('[Kit] scrubber init failed for scene', idx + 1, '— falling back to <video> for this scene', e);
+        scrubbers[idx] = null;
+        if (videos[idx]) videos[idx].style.display = 'block';
+        readyVideo(videos[idx]).catch(() => {});
+      });
+    };
+    (async () => {
+      await Promise.all([0, 1, 2].map(initScrubber));
+      canvases[0] && canvases[0].classList.add('active');
+      stage.setAttribute('data-veil', scenes[0].dataset.veil || 'left');
+      for (let i = 3; i < canvases.length; i++) setTimeout(() => initScrubber(i), 400 + (i - 3) * 250);
+    })();
+  } else {
+    (async () => {
+      await Promise.all(videos.slice(0, 3).map(readyVideo));
+      videos[0].classList.add('active');
+      stage.setAttribute('data-veil', scenes[0].dataset.veil || 'left');
+    })();
+    videos.slice(3).forEach((v, i) => {
+      const idx = i + 3;
+      const trigger = scenes[Math.max(0, idx - 1)] || scenes[idx];
+      ScrollTrigger.create({ trigger, start: 'top bottom', once: true, onEnter: () => readyVideo(v) });
+    });
+  }
 
   const localProgress = new Array(videos.length).fill(0);
   const displayed     = new Array(videos.length).fill(0);
 
   function paintLoop() {
-    for (let i = 0; i < videos.length; i++) {
-      const v = videos[i];
-      if (!v.duration) continue;
-      displayed[i] += (localProgress[i] - displayed[i]) * 0.12;
+    // Touch only the active scene + immediate neighbours (cheaper on weak GPUs).
+    const lo = Math.max(0, lastActive - 1);
+    const hi = Math.min(videos.length - 1, lastActive + 1);
+    for (let i = lo; i <= hi; i++) {
+      displayed[i] += (localProgress[i] - displayed[i]) * 0.18;
       if (Math.abs(localProgress[i] - displayed[i]) < 0.0004) displayed[i] = localProgress[i];
-      const t = displayed[i] * Math.max(0, v.duration - 1 / 60);
-      if (Math.abs(v.currentTime - t) > 1 / 60) { try { v.currentTime = t; } catch (_) {} }
       const d = DOLLY[i] || DOLLY[0];
       const k = displayed[i];
-      v.style.transform = `scale(${d.sx - k*0.05}) translate3d(${d.x*(k-0.5)*2}%, ${d.y*(k-0.5)*2}%, 0)`;
+      const transform = `scale(${d.sx - k*0.05}) translate3d(${d.x*(k-0.5)*2}%, ${d.y*(k-0.5)*2}%, 0)`;
+
+      // WebCodecs path: drive the canvas (no currentTime, no seek-snap).
+      const scr = scrubbers[i];
+      if (scr && scr.ready) {
+        scr.scrubTo(displayed[i]);
+        const c = canvases[i];
+        if (c) c.style.transform = transform;
+        continue;
+      }
+
+      // Legacy path: drive the <video> with currentTime.
+      const v = videos[i];
+      if (!v || !v.duration) continue;
+      const t = displayed[i] * Math.max(0, v.duration - 1 / 60);
+      if (Math.abs(v.currentTime - t) > 1 / 60) { try { v.currentTime = t; } catch (_) {} }
+      v.style.transform = transform;
     }
     requestAnimationFrame(paintLoop);
   }
@@ -210,9 +263,11 @@
   let lastActive = 0;
   function activate(idx, scene) {
     if (idx === lastActive) return;
-    const out = videos[lastActive], inV = videos[idx];
-    inV.classList.add('active');
-    setTimeout(() => { if (out !== inV) out.classList.remove('active'); }, 700);
+    // Toggle active on whichever element type is visible.
+    const pool = useWebCodecs ? canvases : videos;
+    const out = pool[lastActive], inV = pool[idx];
+    if (inV) inV.classList.add('active');
+    setTimeout(() => { if (out && out !== inV) out.classList.remove('active'); }, 700);
     lastActive = idx;
     stage.setAttribute('data-veil', scene.dataset.veil || 'left');
   }
